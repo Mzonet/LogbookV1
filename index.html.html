@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MapChart Styled Home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #0a646b, #1e1e1e);
+      color: white;
+    }
+
+    .wrapper {
+      max-width: 420px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border: 4px solid #007bff;
+      border-radius: 20px;
+      background: #0d2b2e;
+      text-align: center;
+    }
+
+    .logo {
+      width: 50%;
+      max-width: 200px;
+      margin: 0 auto 1rem;
+      display: block;
+      border-radius: 50%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #fff;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-primary {
+      background-color: #ff7f2a;
+      color: white;
+    }
+
+    .btn-secondary {
+      background-color: #3d4f51;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 450px;
+      color: white;
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.4rem;
+      background: #ff4444;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .form-container {
+      margin-top: 1rem;
+      background: #2a2a2a;
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    .form-container label {
+      display: block;
+      margin: 10px 0 5px;
+      text-align: left;
+    }
+
+    .form-container input,
+    .form-container select {
+      width: 100%;
+      padding: 0.6rem;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background: #0d2b2e;
+      color: white;
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .form-header h3 {
+      margin: 0;
+    }
+
+    .form-header button {
+      background-color: #ff7f2a;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: yellow;
+      margin-top: 2rem;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.95);}
+      to {opacity: 1; transform: scale(1);}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <img src="logo.jpg" alt="Map" class="logo">
+    <h1>Vehicle Logbook System</h1>
+
+    <button class="btn btn-primary" onclick="showForm('trip')">Open Trip</button>
+    <button class="btn btn-secondary" onclick="showForm('about')">About</button>
+    <button class="btn btn-secondary" onclick="showForm('sample')">Sample</button>
+    <button class="btn btn-secondary" onclick="showForm('exit')">Exit</button>
+
+    <div class="footer">
+      This is the official simulation of a MapChart-like app.<br/>
+      Version: 1.0.1
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <button class="close-btn" onclick="closeModal()">Close</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    function showForm(type) {
+      let content = '';
+
+      if (type === 'trip') {
+        content = `
+          <div class="form-container" id="new-trip-form">
+            <div class="form-header">
+              <h3>New Trip</h3>
+              <button onclick="calculateTotalKm()">Submit</button>
+            </div>
+
+            <label>District:</label>
+            <select id="district">
+              <option value="">-- Select District --</option>
+              <option>City of Cape Town</option>
+              <option>West Coast District</option>
+              <option>Cape Winelands District</option>
+              <option>Overberg District</option>
+              <option>Garden Route District</option>
+              <option>Central Karoo District</option>
+            </select>
+
+            <label>Name:</label>
+            <input type="text" id="name" placeholder="Enter Name">
+
+            <label>Surname:</label>
+            <input type="text" id="surname" placeholder="Enter Surname">
+
+            <label>Date:</label>
+            <input type="date" id="date">
+
+            <label>From:</label>
+            <input type="text" id="from" placeholder="Starting Location">
+
+            <label>To:</label>
+            <input type="text" id="to" placeholder="Destination">
+
+            <label>Start Kilometers:</label>
+            <input type="number" id="start-km" placeholder="Enter Start Kilometers">
+
+            <label>End Kilometers:</label>
+            <input type="number" id="end-km" placeholder="Enter End Kilometers">
+
+            <label>Total Kilometers:</label>
+            <input type="number" id="total-km" placeholder="Total Kilometers" readonly>
+          </div>
+        `;
+      } else if (type === 'about') {
+        content = `
+          <h2>About This App</h2>
+          <p>This app is a simulation of MapChart, developed to assist with
+          trip planning, map creation, and survey visualization for projects
+          like those in the Western Cape.</p>
+        `;
+      } else if (type === 'sample') {
+        content = `
+          <h2>Sample Map</h2>
+          <p>This is a sample map display.</p>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/South_Africa_-_Western_Cape_locator_map_2016.svg/600px-South_Africa_-_Western_Cape_locator_map_2016.svg.png" 
+          alt="Sample Map" style="width:100%; border-radius: 10px;">
+        `;
+      } else if (type === 'exit') {
+        content = `
+          <h2>Exit Application</h2>
+          <p>Are you sure you want to exit the app?</p>
+          <button class="btn btn-primary" onclick="exitApp()">Yes, Exit</button>
+        `;
+      }
+
+      document.getElementById('modal-body').innerHTML = content;
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function calculateTotalKm() {
+      const startKm = parseFloat(document.getElementById('start-km').value) || 0;
+      const endKm = parseFloat(document.getElementById('end-km').value) || 0;
+      const totalKm = endKm - startKm;
+      document.getElementById('total-km').value = totalKm >= 0 ? totalKm : 0;
+    }
+
+    function exitApp() {
+      document.querySelector('.wrapper').innerHTML = '<h2 style="margin-top: 2rem;">Application Closed</h2>';
+      closeModal();
+    }
+  </script>
+</body>
+</html>
